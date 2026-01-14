@@ -1,53 +1,75 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from "react";
 import { Link, useHistory, useLocation } from "react-router-dom";
-import logo from '../../../assets/logo.png';
-import CloseIcon from '@mui/icons-material/Close';
-import MenuIcon from '@mui/icons-material/Menu';
+import logo from "../../../assets/logo.png";
+import CloseIcon from "@mui/icons-material/Close";
+import MenuIcon from "@mui/icons-material/Menu";
 
 const Header = () => {
   const [sidebar, setSidebar] = useState(false);
   const history = useHistory();
   const location = useLocation();
 
-  // Scroll header shadow
-  window.addEventListener("scroll", function () {
-    const header = document.querySelector(".header");
-    header.classList.toggle("active", window.scrollY > 200);
-  });
+  /* =============================
+     Header shadow on scroll
+  ============================== */
+  useEffect(() => {
+    const onScroll = () => {
+      const header = document.querySelector(".header");
+      if (!header) return;
+      header.classList.toggle("active", window.scrollY > 200);
+    };
 
-  // Logo click
-  const handleLogoClick = () => {
-    if (location.pathname === "/") {
+    window.addEventListener("scroll", onScroll);
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
+  /* =============================
+     Generic navigation + scroll
+  ============================== */
+  const handleNavClick = (path) => {
+    if (location.pathname === path) {
       window.scrollTo({ top: 0, behavior: "smooth" });
     } else {
-      history.push("/");
+      history.push(path);
+      setTimeout(() => {
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      }, 50);
     }
     setSidebar(false);
   };
 
-  // Contact button click
+  /* =============================
+     Logo click
+  ============================== */
+  const handleLogoClick = () => {
+    handleNavClick("/");
+  };
+
+  /* =============================
+     Contact scroll logic
+  ============================== */
   const handleContactClick = () => {
     if (location.pathname !== "/") {
-      history.push("/"); // navigate to homepage first
+      history.push("/");
       setTimeout(() => {
-        const contactSection = document.getElementById("contact");
-        if (contactSection) {
-          contactSection.scrollIntoView({ behavior: "smooth" });
-        }
-      }, 100); // small delay to allow navigation
+        const contact = document.getElementById("contact");
+        contact?.scrollIntoView({ behavior: "smooth" });
+      }, 100);
     } else {
-      const contactSection = document.getElementById("contact");
-      if (contactSection) {
-        contactSection.scrollIntoView({ behavior: "smooth" });
-      }
+      const contact = document.getElementById("contact");
+      contact?.scrollIntoView({ behavior: "smooth" });
     }
     setSidebar(false);
   };
 
   return (
-    <header className='header'>
+    <header className="header">
       <div className="container flex">
-        <div className="logo" style={{ cursor: "pointer" }} onClick={handleLogoClick}>
+        <div
+          className="logo"
+          style={{ cursor: "pointer" }}
+          onClick={handleLogoClick}
+        >
           <img src={logo} alt="logo" />
         </div>
 
@@ -56,14 +78,42 @@ const Header = () => {
             className={sidebar ? "nav-links-sidebar" : "nav-links"}
             onClick={() => setSidebar(false)}
           >
-            <li><Link to="/">Home</Link></li>
-            <li><Link to="/about">About NEXA</Link></li>
-            <li><Link to="/divisions">Divisions</Link></li>
-            <li><Link to="/growth">Growth</Link></li>
-            <li><Link to="/impact">Impact</Link></li>
-            <li><Link to="/explore">Explore</Link></li>
-            <li className='contact-btn'>
-              <span onClick={handleContactClick} style={{ cursor: "pointer" }}>
+            <li>
+              <Link to="/" onClick={() => handleNavClick("/")}>
+                Home
+              </Link>
+            </li>
+            <li>
+              <Link to="/about" onClick={() => handleNavClick("/about")}>
+                About NEXA
+              </Link>
+            </li>
+            <li>
+              <Link to="/divisions" onClick={() => handleNavClick("/divisions")}>
+                Divisions
+              </Link>
+            </li>
+            <li>
+              <Link to="/growth" onClick={() => handleNavClick("/growth")}>
+                Growth
+              </Link>
+            </li>
+            <li>
+              <Link to="/innovation" onClick={() => handleNavClick("/innovation")}>
+                Innovation
+              </Link>
+            </li>
+            <li>
+              <Link to="/impact" onClick={() => handleNavClick("/impact")}>
+                Impact
+              </Link>
+            </li>
+
+            <li className="contact-btn">
+              <span
+                onClick={handleContactClick}
+                style={{ cursor: "pointer" }}
+              >
                 Contact Us
               </span>
             </li>
@@ -71,14 +121,14 @@ const Header = () => {
         </div>
 
         <button
-          className='navbar-items-icon'
+          className="navbar-items-icon"
           onClick={() => setSidebar(!sidebar)}
         >
           {sidebar ? <CloseIcon /> : <MenuIcon />}
         </button>
       </div>
     </header>
-  )
-}
+  );
+};
 
 export default Header;

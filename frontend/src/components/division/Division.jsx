@@ -45,10 +45,18 @@ const Division = () => {
   return (
     <div className="divisions-page">
       
-      {/* Hero Image */}
+      {/* Hero Image
       <div className="hero-image">
         <img src={heroImage} alt="Divisions" />
         <h1 className="hero-title">DIVISIONS</h1>
+      </div> */}
+
+      {/* Hero Section */}
+      <div className="hero-section">
+        <img src={heroImage} alt="About Nexa" className="hero-image" />
+        <div className="hero-overlay">
+          <h1>DIVISIONS</h1>
+        </div>
       </div>
 
       {/* Subtitle & Paragraph */}

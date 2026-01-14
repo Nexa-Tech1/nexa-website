@@ -17,7 +17,7 @@ const ExploreMore = () => {
                         <div className="overlay-text">IMPACT & PERFORMANCE</div>
                     </Link>
 
-                    <Link to="/explore" className="image-card">
+                    <Link to="/innovation" className="image-card">
                         <img src={explore2} alt="" />
                         <div className="overlay-text">INNOVATION & PARTNERSHIPS</div>
                     </Link>

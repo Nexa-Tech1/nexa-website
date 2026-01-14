@@ -1,20 +1,19 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, useCallback } from "react";
 import card1 from "../../../assets/card1.png";
 import card2 from "../../../assets/card2.png";
 import card3 from "../../../assets/card3.png";
 
-
 const cards = [
-  { img: card1, title: "Business development lead", desc: "Builds strategic partnership drives client acquisition and ensures sustainable revenue growth." },
-  { img: card2, title: "AI & technology lead", desc: "Oversees intelligent locally software solutions ensuring innovation and automation for SMEs." },
+  { img: card1, title: "Business development lead", desc: "Builds strategic partnership, drives client acquisition, and ensures sustainable revenue growth." },
+  { img: card2, title: "AI & technology lead", desc: "Oversees intelligent local software solutions ensuring innovation and automation for SMEs." },
   { img: card3, title: "Investment and FDI promotion lead", desc: "Connects Ethiopia to global capital flows enabling inbound investment and outbound expansion." },
-  { img: card1, title: "Real estate lead", desc: "Sets benchmark in property and asset management ensuring trust compliance and superior tenant experiences." },
-  { img: card2, title: "EXIM(export -import ) Lead", desc: "Facilitate Street logistics and cross border, commerce strengthening Ethiopia global market integration." },
-  { img: card3, title: "Global inbound and outbound lead", desc: "Manage international advisory, enabling seamless, expansion, and investment opportunities." },
+  { img: card1, title: "Real estate lead", desc: "Sets benchmark in property and asset management ensuring trust, compliance, and superior tenant experiences." },
+  { img: card2, title: "EXIM(export-import) Lead", desc: "Facilitates street logistics and cross-border commerce strengthening Ethiopia's global market integration." },
+  { img: card3, title: "Global inbound and outbound lead", desc: "Manages international advisory, enabling seamless expansion and investment opportunities." },
   { img: card1, title: "Chief financial officer(CFO)", desc: "Insurance, financial discipline, risk management, and investor confidence." },
-  { img: card2, title: "Chief marketing and communication officer(CMO)", desc: "Shapes Nexa’s brand narrative, manage public relation, and amplifies client accessories." },
-  { img: card3, title: "Head of human capital and culture", desc: "Builds organizational culture, talent, pipelines, and leadership development programs." },
-  { img: card1, title: "Head of sustainability and impact", desc: "Ensures Nexa’s growth with ESG principles, ensuring long - term community and environmental impact." },
+  { img: card2, title: "Chief marketing and communication officer(CMO)", desc: "Shapes Nexa’s brand narrative, manages public relations, and amplifies client experience." },
+  { img: card3, title: "Head of human capital and culture", desc: "Builds organizational culture, talent pipelines, and leadership development programs." },
+  { img: card1, title: "Head of sustainability and impact", desc: "Ensures Nexa’s growth with ESG principles, fostering long-term community and environmental impact." },
 ];
 
 const VISIBLE = 4;
@@ -54,7 +53,6 @@ const Leadership = () => {
   }, [index]);
 
   /* -------- Mouse Drag -------- */
-
   const onMouseDown = (e) => {
     setIsDragging(true);
     startX.current = e.clientX;
@@ -73,29 +71,37 @@ const Leadership = () => {
     snapToNearest();
   };
 
-  /* -------- Trackpad Scroll -------- */
-
-  const onWheel = (e) => {
-    // allow horizontal two-finger scroll
-    if (Math.abs(e.deltaX) < Math.abs(e.deltaY)) return;
-
-    e.preventDefault();
-
-    const next = clampTranslate(translateX + e.deltaX);
-    setTranslateX(next);
-    currentTranslate.current = next;
-
-    clearTimeout(scrollTimeout.current);
-    scrollTimeout.current = setTimeout(snapToNearest, 120);
-  };
-
   /* -------- Snap Logic -------- */
-
-  const snapToNearest = () => {
+  const snapToNearest = useCallback(() => {
     const step = getStep();
     const newIndex = Math.round(translateX / step);
     setIndex(Math.max(0, Math.min(newIndex, maxIndex)));
-  };
+  }, [translateX, maxIndex]);
+
+  /* -------- Trackpad & Mouse Wheel (passive: false) -------- */
+  useEffect(() => {
+    const container = containerRef.current;
+
+    const handleWheel = (e) => {
+   
+      if (Math.abs(e.deltaX) < Math.abs(e.deltaY)) return;
+
+      e.preventDefault(); 
+
+      const next = clampTranslate(translateX + e.deltaX);
+      setTranslateX(next);
+      currentTranslate.current = next;
+
+      clearTimeout(scrollTimeout.current);
+      scrollTimeout.current = setTimeout(snapToNearest, 120);
+    };
+
+    container.addEventListener("wheel", handleWheel, { passive: false });
+
+    return () => {
+      container.removeEventListener("wheel", handleWheel);
+    };
+  }, [translateX, snapToNearest]);
 
   return (
     <div className="leadership">
@@ -117,7 +123,6 @@ const Leadership = () => {
           onMouseMove={onMouseMove}
           onMouseUp={onMouseUp}
           onMouseLeave={onMouseUp}
-          onWheel={onWheel}
           style={{ cursor: isDragging ? "grabbing" : "grab" }}
         >
           <div
